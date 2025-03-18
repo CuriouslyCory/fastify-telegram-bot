@@ -29,7 +29,7 @@ const start = async () => {
     // registerRoutes(app);
     await setupServices(app);
 
-    await app.listen({ host: "0.0.0.0", port: Number(env.PORT ?? 3200) });
+    await app.listen({ host: "127.0.0.1", port: Number(env.PORT ?? 3200) });
   } catch (err) {
     log.error(err);
     process.exit(1);

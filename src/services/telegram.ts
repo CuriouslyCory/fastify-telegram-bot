@@ -13,6 +13,7 @@ export class TelegramService {
 
   private constructor() {
     this.bot = new Telegraf(env.TELEGRAM_BOT_TOKEN);
+    log.info("Bot initialized");
     this.setupHandlers();
   }
 
@@ -28,12 +29,11 @@ export class TelegramService {
   }
 
   private setupHandlers() {
+    log.info("Handler setup started");
     // Handle start command
     this.bot.command("start", async (ctx) => {
       log.info("Received start command from", ctx.from);
-      await ctx.reply(
-        "Welcome! I'm here to help you analyze executive orders and other documents. Send me a text or file to get started."
-      );
+      await ctx.reply("Welcome! I'm here to help you.");
     });
 
     // Handle help command
@@ -43,10 +43,7 @@ export class TelegramService {
           "/start - Start the bot\n" +
           "/help - Show this help message\n\n" +
           "You can also:\n" +
-          "- Send me a URL to add it to the research database\n" +
-          "- Ask me to analyze a document by title or ID\n" +
-          "- Request an ELI5 or action plan for a document\n" +
-          "- Ask me to update a document's score"
+          "- Be really nice and cool"
       );
     });
 
@@ -172,6 +169,7 @@ export class TelegramService {
 
   public async start() {
     try {
+      log.info("Starting telegram bot");
       await this.bot.launch();
       log.info("Telegram bot started");
 

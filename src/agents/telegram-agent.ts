@@ -13,6 +13,7 @@ export async function getTelegramAgent() {
   log.info("Getting telegram agent");
 
   const pgCheckpointSaver = await getCheckpointer();
+  pgCheckpointSaver.setup();
 
   const selectedModel = models.geminiToolsModel;
 
@@ -29,7 +30,13 @@ export async function getTelegramAgent() {
       stringLengthTool,
     ] as (StructuredToolInterface | RunnableToolLike)[],
     checkpointSaver: pgCheckpointSaver,
-    stateModifier: new SystemMessage([].join("\n")),
+    stateModifier: new SystemMessage(
+      [
+        "You are a helpful telegram assisant.",
+        "Limit your message responses to 4000 characters.",
+        "Format your replies in plain text.",
+      ].join("\n")
+    ),
   });
 
   return telegramAgent;

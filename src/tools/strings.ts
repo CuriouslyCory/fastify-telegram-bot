@@ -1,9 +1,11 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
+import log from "electron-log";
 
 // Tool to execute document workflows
 export const stringLengthTool = tool(
   async ({ string }) => {
+    log.info("calculating string length");
     return string.length;
   },
   {
