@@ -1,5 +1,8 @@
 import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const strNumber = z
   .string()
