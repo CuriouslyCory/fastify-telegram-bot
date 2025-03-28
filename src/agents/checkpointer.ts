@@ -8,11 +8,6 @@ const { Pool } = pg;
 export async function getCheckpointer() {
   try {
     const pool = new Pool({
-      // user: process.env.TIMESCALE_DB_USER,
-      // password: process.env.TIMESCALE_DB_PASSWORD,
-      // host: process.env.TIMESCALE_DB_HOST,
-      // port: parseInt(process.env.TIMESCALE_DB_PORT!, 10),
-      // database: process.env.TIMESCALE_DB_DATABASE,
       connectionString: env.DATABASE_URL,
       max: 20,
       idleTimeoutMillis: 1000,
@@ -21,6 +16,7 @@ export async function getCheckpointer() {
     });
 
     const pgCheckpointSaver = new PostgresSaver(pool);
+    //pgCheckpointSaver.setup();
 
     return pgCheckpointSaver;
   } catch (error) {

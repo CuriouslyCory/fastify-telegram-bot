@@ -1,16 +1,17 @@
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatOllama } from "@langchain/ollama";
+import { env } from "./loadEnv";
 
 // Initialize models
 const geminiToolsModelRaw = new ChatGoogleGenerativeAI({
-  apiKey: process.env.GEMINI_API_KEY,
+  apiKey: env.GEMINI_API_KEY,
   modelName: "gemini-2.0-flash-exp",
   maxConcurrency: 5,
   temperature: 0,
 });
 
 const geminiReasoningModelRaw = new ChatGoogleGenerativeAI({
-  apiKey: process.env.GEMINI_API_KEY,
+  apiKey: env.GEMINI_API_KEY,
   modelName: "gemini-2.0-flash-thinking-exp-01-21",
   maxConcurrency: 5,
 });
