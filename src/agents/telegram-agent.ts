@@ -2,15 +2,23 @@ import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { StructuredToolInterface } from "@langchain/core/tools";
 import { RunnableToolLike } from "@langchain/core/runnables";
 import { SystemMessage } from "@langchain/core/messages";
+import { MultiServerMCPClient } from "@langchain/mcp-adapters";
 import log from "electron-log";
 
 import { getCheckpointer } from "./checkpointer";
 import { models } from "../utils/ai-models";
 import { stringLengthTool } from "../tools/strings";
 import { mathTools } from "../tools";
+import { loadAgentPrompts } from "../utils/agent-prompts";
+import path from "node:path";
 
 export async function getTelegramAgent() {
   log.info("Getting telegram agent");
+  const client = MultiServerMCPClient.fromConfigFile(
+    "./src/constants/mcp.json"
+  );
+  await client.initializeConnections();
+  const tools = client.getTools();
 
   const pgCheckpointSaver = await getCheckpointer();
   pgCheckpointSaver.setup();
@@ -22,21 +30,20 @@ export async function getTelegramAgent() {
     throw new Error("No suitable model found for telegram agent");
   }
 
+  // Load agent prompts configuration
+  const agentPrompts = await loadAgentPrompts();
+  const systemPrompt = agentPrompts.telegram.system_prompt.join("\n");
+
   // Create the agent with all tools
   const telegramAgent = createReactAgent({
     llm: selectedModel,
     tools: [
       ...(Array.isArray(mathTools) ? mathTools : [mathTools]),
       stringLengthTool,
+      ...tools,
     ] as (StructuredToolInterface | RunnableToolLike)[],
     checkpointSaver: pgCheckpointSaver,
-    stateModifier: new SystemMessage(
-      [
-        "You are a helpful telegram assisant.",
-        "Limit your message responses to 4000 characters.",
-        "Format your replies in plain text.",
-      ].join("\n")
-    ),
+    stateModifier: new SystemMessage(systemPrompt),
   });
 
   return telegramAgent;
