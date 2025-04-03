@@ -1,15 +1,14 @@
 // ESM
-import Fastify from "fastify";
+import Fastify, { FastifyInstance } from "fastify";
 import { registerPlugins } from "./plugins";
-// import { registerRoutes } from "./routes";
 import { setupServices } from "./services";
 import log from "electron-log";
 import { env } from "./utils/loadEnv";
 
 /**
- * Run the server!
+ * Create and configure the Fastify app
  */
-const start = async () => {
+export async function createApp(): Promise<FastifyInstance> {
   const app = Fastify({
     logger: {
       level: "info",
@@ -24,15 +23,27 @@ const start = async () => {
     trustProxy: true,
   });
 
-  try {
-    await registerPlugins(app);
-    // registerRoutes(app);
-    await setupServices(app);
+  await registerPlugins(app);
+  // registerRoutes(app);
+  await setupServices(app);
 
+  return app;
+}
+
+/**
+ * Start the server
+ */
+export async function startServer(): Promise<void> {
+  try {
+    const app = await createApp();
     await app.listen({ host: "127.0.0.1", port: Number(env.PORT ?? 3200) });
   } catch (err) {
     log.error(err);
     process.exit(1);
   }
-};
-start();
+}
+
+// Only start the server if this file is run directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  startServer();
+}

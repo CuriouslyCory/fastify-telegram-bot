@@ -6,3 +6,4 @@ dist
 *.db
 ./backups
 reference_data/*.pdf
+/coverage
